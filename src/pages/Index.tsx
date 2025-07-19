@@ -13,11 +13,14 @@ import UserProfile from "@/components/UserProfile";
 import AddFAQDialog from "@/components/AddFAQDialog";
 import Logo from "@/components/Logo";
 import { useFAQs } from "@/hooks/useFAQs";
+import { useIsAdmin } from "@/hooks/useProfile";
 
 const Index = () => {
   const { user } = useAuth();
   const { faqs, loading: faqsLoading, refetch } = useFAQs();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<string>("overview");
+  const isAdmin = useIsAdmin();
 
   const categories = ["all", "general", "technical", "billing", "support"];
   
@@ -27,6 +30,10 @@ const Index = () => {
 
   const handleFAQAdded = () => {
     refetch();
+  };
+
+  const handleBrowseFAQs = () => {
+    setActiveTab("faqs");
   };
 
   return (
@@ -52,7 +59,7 @@ const Index = () => {
           )}
         </div>
 
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
@@ -77,7 +84,9 @@ const Index = () => {
                   <p className="text-gray-600 mb-4">
                     Find answers to common questions and learn how to make the most of our platform with detailed guides.
                   </p>
-                  <Button variant="outline" className="w-full">Browse FAQs</Button>
+                  <Button variant="outline" className="w-full" onClick={handleBrowseFAQs}>
+                    Browse FAQs
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -139,8 +148,8 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {/* Add FAQ Button - only show if user is authenticated */}
-                {user && (
+                {/* Add FAQ Button - only show if user is admin */}
+                {isAdmin && (
                   <div className="mb-6">
                     <AddFAQDialog onFAQAdded={handleFAQAdded} />
                   </div>
