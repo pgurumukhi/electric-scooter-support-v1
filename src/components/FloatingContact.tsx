@@ -5,20 +5,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useContactSubmissions } from "@/hooks/useContactSubmissions";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
+  const { submitContactForm, loading } = useContactSubmissions();
+  const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Contact form submitted:", { email, message });
-    setMessage("");
-    setEmail("");
-    setIsOpen(false);
-    // You could integrate with your contact system here
+    
+    const result = await submitContactForm(email, message);
+    
+    if (result.success) {
+      setMessage("");
+      setEmail("");
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -61,6 +67,7 @@ const FloatingContact = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="border-gray-200 focus:border-blue-500 transition-colors"
+                    disabled={loading}
                   />
                 </div>
                 
@@ -72,15 +79,26 @@ const FloatingContact = () => {
                     required
                     rows={4}
                     className="border-gray-200 focus:border-blue-500 transition-colors resize-none"
+                    disabled={loading}
                   />
                 </div>
                 
                 <Button 
                   type="submit" 
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+                  disabled={loading}
                 >
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Message
+                  {loading ? (
+                    <>
+                      <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Send Message
+                    </>
+                  )}
                 </Button>
               </form>
               
