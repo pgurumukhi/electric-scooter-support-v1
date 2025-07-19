@@ -48,7 +48,6 @@ export type Database = {
           email_verified: boolean | null
           id: string
           otp: string | null
-          otp_expires_at: string | null
           updated_at: string
         }
         Insert: {
@@ -57,7 +56,6 @@ export type Database = {
           email_verified?: boolean | null
           id: string
           otp?: string | null
-          otp_expires_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -66,7 +64,6 @@ export type Database = {
           email_verified?: boolean | null
           id?: string
           otp?: string | null
-          otp_expires_at?: string | null
           updated_at?: string
         }
         Relationships: []

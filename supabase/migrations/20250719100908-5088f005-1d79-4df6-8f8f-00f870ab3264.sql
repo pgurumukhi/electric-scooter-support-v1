@@ -2,7 +2,6 @@
 -- Add OTP column to profiles table for email verification
 ALTER TABLE public.profiles 
 ADD COLUMN otp TEXT,
-ADD COLUMN otp_expires_at TIMESTAMP WITH TIME ZONE,
 ADD COLUMN email_verified BOOLEAN DEFAULT FALSE;
 
 -- Create an index on OTP for faster lookups
