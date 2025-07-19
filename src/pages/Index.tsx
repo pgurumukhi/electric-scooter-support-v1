@@ -14,7 +14,7 @@ import { useFAQs } from "@/hooks/useFAQs";
 
 const Index = () => {
   const { user } = useAuth();
-  const { data: faqs, isLoading: faqsLoading } = useFAQs();
+  const { faqs, loading: faqsLoading } = useFAQs();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const categories = ["all", "general", "technical", "billing", "support"];
@@ -175,9 +175,7 @@ const Index = () => {
                     {filteredFAQs?.map((faq) => (
                       <FAQItem
                         key={faq.id}
-                        question={faq.question}
-                        answer={faq.answer}
-                        category={faq.category}
+                        faq={faq}
                       />
                     ))}
                     {filteredFAQs?.length === 0 && (
