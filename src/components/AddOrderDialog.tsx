@@ -34,7 +34,7 @@ import { useCreateOrder, useProfiles, CreateOrderData } from "@/hooks/useOrders"
 
 const formSchema = z.object({
   profile_id: z.string().min(1, "Profile is required"),
-  quantity: z.number().min(1, "Quantity must be at least 1"),
+  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
   description: z.string().min(1, "Description is required"),
   order_date: z.string().min(1, "Order date is required"),
   status: z.enum(["pending", "processing", "completed", "cancelled"]),
@@ -60,14 +60,18 @@ const AddOrderDialog = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log("Form data:", data);
+      
       // Ensure the data matches CreateOrderData interface
       const orderData: CreateOrderData = {
         profile_id: data.profile_id,
-        quantity: data.quantity,
+        quantity: Number(data.quantity),
         description: data.description,
         order_date: data.order_date,
         status: data.status,
       };
+      
+      console.log("Order data to submit:", orderData);
       
       await createOrder.mutateAsync(orderData);
       form.reset();
@@ -100,7 +104,7 @@ const AddOrderDialog = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Customer Email</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select customer email" />
@@ -133,8 +137,8 @@ const AddOrderDialog = () => {
                     <Input
                       type="number"
                       min="1"
+                      placeholder="Enter quantity"
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -179,7 +183,7 @@ const AddOrderDialog = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
