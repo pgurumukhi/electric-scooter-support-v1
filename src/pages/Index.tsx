@@ -12,6 +12,7 @@ import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
 import AddFAQDialog from "@/components/AddFAQDialog";
 import ContactSubmissionCard from "@/components/ContactSubmissionCard";
+import SubmissionFilters from "@/components/SubmissionFilters";
 import Logo from "@/components/Logo";
 import { useFAQs } from "@/hooks/useFAQs";
 import { useIsAdmin } from "@/hooks/useProfile";
@@ -23,8 +24,22 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [submissionStatus, setSubmissionStatus] = useState<'all' | 'new' | 'in_progress' | 'resolved'>('all');
+  const [submissionPage, setSubmissionPage] = useState<number>(1);
   const isAdmin = useIsAdmin();
-  const { submissions, isLoading: submissionsLoading, updateSubmission, isUpdating } = useAdminContactSubmissions();
+  
+  const { 
+    submissions, 
+    totalCount, 
+    totalPages, 
+    isLoading: submissionsLoading, 
+    updateSubmission, 
+    isUpdating 
+  } = useAdminContactSubmissions({
+    status: submissionStatus,
+    page: submissionPage,
+    limit: 5
+  });
 
   const categories = ["all", "general", "technical", "billing", "support"];
   
@@ -43,6 +58,15 @@ const Index = () => {
 
   const handleBrowseFAQs = () => {
     setActiveTab("faqs");
+  };
+
+  const handleStatusChange = (status: 'all' | 'new' | 'in_progress' | 'resolved') => {
+    setSubmissionStatus(status);
+    setSubmissionPage(1); // Reset to first page when changing filter
+  };
+
+  const handlePageChange = (page: number) => {
+    setSubmissionPage(page);
   };
 
   return (
@@ -277,7 +301,16 @@ const Index = () => {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     </div>
                   ) : (
-                    <div>
+                    <div className="space-y-6">
+                      <SubmissionFilters
+                        currentStatus={submissionStatus}
+                        onStatusChange={handleStatusChange}
+                        currentPage={submissionPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        totalCount={totalCount}
+                      />
+                      
                       {submissions && submissions.length > 0 ? (
                         <div className="space-y-4">
                           {submissions.map((submission) => (
@@ -292,9 +325,14 @@ const Index = () => {
                       ) : (
                         <div className="text-center py-8">
                           <Inbox className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-lg font-semibold text-gray-600 mb-2">No submissions yet</h3>
+                          <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                            {submissionStatus === 'all' ? 'No submissions yet' : `No ${submissionStatus.replace('_', ' ')} submissions`}
+                          </h3>
                           <p className="text-gray-500">
-                            Contact submissions will appear here when users send messages.
+                            {submissionStatus === 'all' 
+                              ? 'Contact submissions will appear here when users send messages.'
+                              : `No submissions with ${submissionStatus.replace('_', ' ')} status found.`
+                            }
                           </p>
                         </div>
                       )}

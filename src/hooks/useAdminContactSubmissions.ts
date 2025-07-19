@@ -16,24 +16,47 @@ export interface AdminContactSubmission {
   created_at: string;
 }
 
-export const useAdminContactSubmissions = () => {
+interface UseAdminContactSubmissionsOptions {
+  status?: 'all' | 'new' | 'in_progress' | 'resolved';
+  page?: number;
+  limit?: number;
+}
+
+export const useAdminContactSubmissions = (options: UseAdminContactSubmissionsOptions = {}) => {
+  const { status = 'all', page = 1, limit = 5 } = options;
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: submissions, isLoading, refetch } = useQuery({
-    queryKey: ['admin-contact-submissions'],
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['admin-contact-submissions', status, page, limit],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('contact_submissions')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
+
+      // Apply status filter if not 'all'
+      if (status !== 'all') {
+        query = query.eq('status', status);
+      }
+
+      // Apply pagination
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      query = query.range(from, to);
+
+      const { data: submissions, error, count } = await query;
 
       if (error) {
         throw error;
       }
 
-      return data as AdminContactSubmission[];
+      return {
+        submissions: submissions as AdminContactSubmission[],
+        totalCount: count || 0,
+        totalPages: Math.ceil((count || 0) / limit)
+      };
     },
     enabled: !!user,
   });
@@ -84,7 +107,9 @@ export const useAdminContactSubmissions = () => {
   };
 
   return {
-    submissions,
+    submissions: data?.submissions || [],
+    totalCount: data?.totalCount || 0,
+    totalPages: data?.totalPages || 0,
     isLoading,
     refetch,
     updateSubmission,
