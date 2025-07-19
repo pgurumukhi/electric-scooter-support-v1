@@ -59,6 +59,7 @@ export const useCreateOrder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['user-orders'] });
       toast({
         title: "Order Created",
         description: "Order has been successfully created.",
