@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,7 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateOrder, useProfiles, CreateOrderData } from "@/hooks/useOrders";
+import { useCreateOrder, useProfiles, useAllProfiles, CreateOrderData } from "@/hooks/useOrders";
+import { useIsAdmin } from "@/hooks/useProfile";
 
 const formSchema = z.object({
   profile_id: z.string().min(1, "Profile is required"),
@@ -44,8 +44,14 @@ type FormData = z.infer<typeof formSchema>;
 
 const AddOrderDialog = () => {
   const [open, setOpen] = useState(false);
-  const { data: profiles, isLoading: profilesLoading } = useProfiles();
+  const isAdmin = useIsAdmin();
+  const { data: verifiedProfiles, isLoading: verifiedProfilesLoading } = useProfiles();
+  const { data: allProfiles, isLoading: allProfilesLoading } = useAllProfiles();
   const createOrder = useCreateOrder();
+
+  // Use all profiles for admin, verified profiles for regular users
+  const profiles = isAdmin ? allProfiles : verifiedProfiles;
+  const profilesLoading = isAdmin ? allProfilesLoading : verifiedProfilesLoading;
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),

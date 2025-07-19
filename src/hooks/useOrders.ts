@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -126,6 +127,21 @@ export const useProfiles = () => {
         .from('profiles')
         .select('id, email')
         .eq('email_verified', true)
+        .order('email');
+
+      if (error) throw error;
+      return data;
+    },
+  });
+};
+
+export const useAllProfiles = () => {
+  return useQuery({
+    queryKey: ['all-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email')
         .order('email');
 
       if (error) throw error;
