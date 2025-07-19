@@ -39,11 +39,7 @@ export const useAdminContactSubmissions = () => {
   });
 
   const updateSubmissionMutation = useMutation({
-    mutationFn: async ({ 
-      id, 
-      response, 
-      status 
-    }: { 
+    mutationFn: async (variables: { 
       id: string; 
       response: string; 
       status: 'new' | 'in_progress' | 'resolved' 
@@ -51,12 +47,12 @@ export const useAdminContactSubmissions = () => {
       const { data, error } = await supabase
         .from('contact_submissions')
         .update({
-          response,
-          status,
+          response: variables.response,
+          status: variables.status,
           responded_at: new Date().toISOString(),
           responded_by: user?.id
         })
-        .eq('id', id)
+        .eq('id', variables.id)
         .select()
         .single();
 
@@ -83,11 +79,15 @@ export const useAdminContactSubmissions = () => {
     },
   });
 
+  const updateSubmission = (id: string, response: string, status: 'new' | 'in_progress' | 'resolved') => {
+    updateSubmissionMutation.mutate({ id, response, status });
+  };
+
   return {
     submissions,
     isLoading,
     refetch,
-    updateSubmission: updateSubmissionMutation.mutate,
+    updateSubmission,
     isUpdating: updateSubmissionMutation.isPending
   };
 };
