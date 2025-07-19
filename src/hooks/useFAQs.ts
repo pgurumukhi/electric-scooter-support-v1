@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface FAQ {
@@ -16,30 +16,34 @@ export const useFAQs = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchFAQs = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('faqs')
-          .select('*')
-          .order('created_at', { ascending: true });
+  const fetchFAQs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('*')
+        .order('created_at', { ascending: true });
 
-        if (error) {
-          throw error;
-        }
-
-        setFaqs(data || []);
-      } catch (err) {
-        console.error('Error fetching FAQs:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
+      if (error) {
+        throw error;
       }
-    };
 
-    fetchFAQs();
+      setFaqs(data || []);
+    } catch (err) {
+      console.error('Error fetching FAQs:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { faqs, loading, error };
+  useEffect(() => {
+    fetchFAQs();
+  }, [fetchFAQs]);
+
+  const refetch = useCallback(() => {
+    fetchFAQs();
+  }, [fetchFAQs]);
+
+  return { faqs, loading, error, refetch };
 };

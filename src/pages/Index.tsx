@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,11 +9,12 @@ import { BookOpen, Phone, Users, HelpCircle, User, MessageSquare } from "lucide-
 import FloatingContact from "@/components/FloatingContact";
 import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
+import AddFAQDialog from "@/components/AddFAQDialog";
 import { useFAQs } from "@/hooks/useFAQs";
 
 const Index = () => {
   const { user } = useAuth();
-  const { faqs, loading: faqsLoading } = useFAQs();
+  const { faqs, loading: faqsLoading, refetch } = useFAQs();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const categories = ["all", "general", "technical", "billing", "support"];
@@ -22,6 +22,10 @@ const Index = () => {
   const filteredFAQs = selectedCategory === "all" 
     ? faqs 
     : faqs?.filter(faq => faq.category === selectedCategory);
+
+  const handleFAQAdded = () => {
+    refetch();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -130,6 +134,13 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Add FAQ Button - only show if user is authenticated */}
+                {user && (
+                  <div className="mb-6">
+                    <AddFAQDialog onFAQAdded={handleFAQAdded} />
+                  </div>
+                )}
+
                 {/* Category Filter */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {categories.map((category) => (
