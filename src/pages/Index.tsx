@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Users, HelpCircle, User, Search, Inbox, ShoppingCart } from "lucide-react";
+import { BookOpen, Users, HelpCircle, User, Search, Inbox, ShoppingCart, Package } from "lucide-react";
 import FloatingContact from "@/components/FloatingContact";
 import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
@@ -20,6 +20,8 @@ import { useFAQs } from "@/hooks/useFAQs";
 import { useIsAdmin } from "@/hooks/useProfile";
 import { useAdminContactSubmissions } from "@/hooks/useAdminContactSubmissions";
 import { useOrders } from "@/hooks/useOrders";
+import UserOrdersTable from "@/components/UserOrdersTable";
+import { useUserOrders } from "@/hooks/useUserOrders";
 
 const Index = () => {
   const { user } = useAuth();
@@ -45,6 +47,7 @@ const Index = () => {
   });
 
   const { data: orders, isLoading: ordersLoading } = useOrders();
+  const { data: userOrders, isLoading: userOrdersLoading } = useUserOrders();
 
   const categories = ["all", "general", "technical", "billing", "support"];
   
@@ -98,10 +101,11 @@ const Index = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-3'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-6' : 'grid-cols-4'}`}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="my-orders">My Orders</TabsTrigger>
             {isAdmin && <TabsTrigger value="queries">Queries</TabsTrigger>}
             {isAdmin && <TabsTrigger value="orders">Orders</TabsTrigger>}
           </TabsList>
@@ -254,6 +258,29 @@ const Index = () => {
             <div className="max-w-2xl mx-auto">
               <UserProfile />
             </div>
+          </TabsContent>
+
+          <TabsContent value="my-orders">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Package className="h-6 w-6" />
+                  My Orders
+                </CardTitle>
+                <CardDescription>
+                  View the status of your orders
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {userOrdersLoading ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : (
+                  <UserOrdersTable orders={userOrders || []} />
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {isAdmin && (
