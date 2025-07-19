@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { MessageSquare, BookOpen, Phone, Users, HelpCircle, User } from "lucide-react";
+import { BookOpen, Phone, Users, HelpCircle, User } from "lucide-react";
 import FloatingContact from "@/components/FloatingContact";
 import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
@@ -53,25 +52,7 @@ const Index = () => {
 
           <TabsContent value="overview">
             {/* Feature Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <MessageSquare className="h-8 w-8 text-blue-600" />
-                    Live Chat Support
-                  </CardTitle>
-                  <CardDescription>
-                    Get instant help from our support team
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Connect with our expert support agents in real-time for immediate assistance with any questions or issues.
-                  </p>
-                  <Button className="w-full">Start Chat</Button>
-                </CardContent>
-              </Card>
-
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
