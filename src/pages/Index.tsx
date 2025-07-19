@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Phone, Users, HelpCircle, User, MessageSquare, Search, Inbox, ShoppingCart } from "lucide-react";
+import { BookOpen, Users, HelpCircle, User, Search, Inbox, ShoppingCart } from "lucide-react";
 import FloatingContact from "@/components/FloatingContact";
 import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
@@ -98,10 +98,9 @@ const Index = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-6' : 'grid-cols-4'}`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-3'}`}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
-            <TabsTrigger value="contact">Contact</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             {isAdmin && <TabsTrigger value="queries">Queries</TabsTrigger>}
             {isAdmin && <TabsTrigger value="orders">Orders</TabsTrigger>}
@@ -133,18 +132,20 @@ const Index = () => {
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <Phone className="h-8 w-8 text-purple-600" />
-                    Priority Support
+                    <Users className="h-8 w-8 text-purple-600" />
+                    Customer Support
                   </CardTitle>
                   <CardDescription>
-                    24/7 premium support for urgent issues
+                    Get help when you need it most
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
-                    Get priority assistance for critical issues with our dedicated support team available around the clock.
+                    Use our floating contact button to get immediate assistance from our support team.
                   </p>
-                  <Button variant="outline" className="w-full">Contact Support</Button>
+                  <Button variant="outline" className="w-full" disabled>
+                    Contact Available 24/7
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -245,40 +246,6 @@ const Index = () => {
                     )}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="contact">
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Support</CardTitle>
-                <CardDescription>
-                  Get in touch with our support team
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <MessageSquare className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Need Help?</h3>
-                  <p className="text-gray-600 mb-6">
-                    Use the floating contact button in the bottom right corner to get immediate assistance.
-                  </p>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium">Email Support</h4>
-                      <p className="text-gray-600">support@helpdesk.com</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Phone Support</h4>
-                      <p className="text-gray-600">1-800-HELPDESK</p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium">Business Hours</h4>
-                      <p className="text-gray-600">Monday - Friday, 9AM - 6PM EST</p>
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
