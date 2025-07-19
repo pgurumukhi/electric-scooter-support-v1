@@ -40,6 +40,7 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Order ID</TableHead>
             <TableHead>Customer Email</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Quantity</TableHead>
@@ -52,6 +53,9 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
         <TableBody>
           {orders.map((order) => (
             <TableRow key={order.id}>
+              <TableCell className="font-mono text-sm">
+                {order.id.substring(0, 8)}...
+              </TableCell>
               <TableCell className="font-medium">
                 {order.profiles?.email || "Unknown"}
               </TableCell>
@@ -79,7 +83,7 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
           ))}
           {orders.length === 0 && (
             <TableRow>
-              <TableCell colSpan={isAdmin ? 7 : 6} className="text-center py-8 text-gray-500">
+              <TableCell colSpan={isAdmin ? 8 : 7} className="text-center py-8 text-gray-500">
                 No orders found
               </TableCell>
             </TableRow>
