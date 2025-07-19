@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -268,10 +269,14 @@ const Index = () => {
                   My Orders
                 </CardTitle>
                 <CardDescription>
-                  View the status of your orders
+                  View and manage your orders
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                <div className="mb-6">
+                  <AddOrderDialog />
+                </div>
+                
                 {userOrdersLoading ? (
                   <div className="flex justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
