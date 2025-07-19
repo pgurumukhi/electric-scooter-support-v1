@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,14 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Phone, Users, HelpCircle, User, MessageSquare, Search } from "lucide-react";
+import { BookOpen, Phone, Users, HelpCircle, User, MessageSquare, Search, Inbox } from "lucide-react";
 import FloatingContact from "@/components/FloatingContact";
 import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
 import AddFAQDialog from "@/components/AddFAQDialog";
+import ContactSubmissionCard from "@/components/ContactSubmissionCard";
 import Logo from "@/components/Logo";
 import { useFAQs } from "@/hooks/useFAQs";
 import { useIsAdmin } from "@/hooks/useProfile";
+import { useAdminContactSubmissions } from "@/hooks/useAdminContactSubmissions";
 
 const Index = () => {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const isAdmin = useIsAdmin();
+  const { submissions, isLoading: submissionsLoading, updateSubmission, isUpdating } = useAdminContactSubmissions();
 
   const categories = ["all", "general", "technical", "billing", "support"];
   
@@ -67,11 +69,12 @@ const Index = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-4'}`}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="faqs">FAQs</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            {isAdmin && <TabsTrigger value="queries">Queries</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="overview">
@@ -255,6 +258,52 @@ const Index = () => {
               <UserProfile />
             </div>
           </TabsContent>
+
+          {isAdmin && (
+            <TabsContent value="queries">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Inbox className="h-6 w-6" />
+                    Contact Submissions
+                  </CardTitle>
+                  <CardDescription>
+                    Manage and respond to customer queries
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {submissionsLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                  ) : (
+                    <div>
+                      {submissions && submissions.length > 0 ? (
+                        <div className="space-y-4">
+                          {submissions.map((submission) => (
+                            <ContactSubmissionCard
+                              key={submission.id}
+                              submission={submission}
+                              onUpdate={updateSubmission}
+                              isUpdating={isUpdating}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <Inbox className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold text-gray-600 mb-2">No submissions yet</h3>
+                          <p className="text-gray-500">
+                            Contact submissions will appear here when users send messages.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
 

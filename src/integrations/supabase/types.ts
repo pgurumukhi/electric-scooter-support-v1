@@ -20,6 +20,9 @@ export type Database = {
           email: string
           id: string
           message: string
+          responded_at: string | null
+          responded_by: string | null
+          response: string | null
           status: string | null
           user_id: string | null
         }
@@ -28,6 +31,9 @@ export type Database = {
           email: string
           id?: string
           message: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response?: string | null
           status?: string | null
           user_id?: string | null
         }
@@ -36,6 +42,9 @@ export type Database = {
           email?: string
           id?: string
           message?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response?: string | null
           status?: string | null
           user_id?: string | null
         }
