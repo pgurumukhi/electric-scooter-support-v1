@@ -31,6 +31,7 @@ export const useUserOrders = () => {
           *,
           profiles!inner(email)
         `)
+        .eq('profile_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
