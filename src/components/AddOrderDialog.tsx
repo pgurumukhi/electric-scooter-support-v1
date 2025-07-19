@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateOrder, useProfiles } from "@/hooks/useOrders";
+import { useCreateOrder, useProfiles, CreateOrderData } from "@/hooks/useOrders";
 
 const formSchema = z.object({
   profile_id: z.string().min(1, "Profile is required"),
@@ -60,7 +60,16 @@ const AddOrderDialog = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await createOrder.mutateAsync(data);
+      // Ensure the data matches CreateOrderData interface
+      const orderData: CreateOrderData = {
+        profile_id: data.profile_id,
+        quantity: data.quantity,
+        description: data.description,
+        order_date: data.order_date,
+        status: data.status,
+      };
+      
+      await createOrder.mutateAsync(orderData);
       form.reset();
       setOpen(false);
     } catch (error) {
