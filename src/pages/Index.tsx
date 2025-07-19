@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +22,8 @@ import { useAdminContactSubmissions } from "@/hooks/useAdminContactSubmissions";
 import { useOrders } from "@/hooks/useOrders";
 import UserOrdersTable from "@/components/UserOrdersTable";
 import { useUserOrders } from "@/hooks/useUserOrders";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const { user } = useAuth();
@@ -49,6 +50,23 @@ const Index = () => {
 
   const { data: orders, isLoading: ordersLoading } = useOrders();
   const { data: userOrders, isLoading: userOrdersLoading } = useUserOrders();
+
+  // Fetch statistics for orders and queries
+  const { data: statsData } = useQuery({
+    queryKey: ['support-statistics'],
+    queryFn: async () => {
+      const [ordersResponse, queriesResponse] = await Promise.all([
+        supabase.from('orders').select('*', { count: 'exact', head: true }),
+        supabase.from('contact_submissions').select('*', { count: 'exact', head: true })
+      ]);
+
+      return {
+        totalOrders: ordersResponse.count || 0,
+        totalQueries: queriesResponse.count || 0
+      };
+    },
+    enabled: !!user,
+  });
 
   const categories = ["all", "general", "technical", "billing", "support"];
   
@@ -166,12 +184,16 @@ const Index = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">99.9%</div>
-                    <div className="text-gray-600">Uptime Guarantee</div>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">
+                      {statsData?.totalOrders || 0}
+                    </div>
+                    <div className="text-gray-600">Total Orders</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600 mb-2">&lt;2min</div>
-                    <div className="text-gray-600">Average Response Time</div>
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      {statsData?.totalQueries || 0}
+                    </div>
+                    <div className="text-gray-600">Total Queries</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-purple-600 mb-2">10k+</div>
