@@ -16,8 +16,8 @@ const Logo: React.FC<LogoProps> = ({ className = '', size = 'md' }) => {
   return (
     <div className={`flex items-center ${className}`}>
       <img
-        src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=200&h=60&q=80"
-        alt="Ather"
+        src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=200&h=60&q=80"
+        alt="Electric Scooter"
         className={`${sizeClasses[size]} object-contain`}
       />
       <span className="ml-2 text-lg font-semibold text-gray-900">Ather</span>
