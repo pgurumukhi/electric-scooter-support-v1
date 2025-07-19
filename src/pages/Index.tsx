@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import FloatingContact from "@/components/FloatingContact";
 import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
 import AddFAQDialog from "@/components/AddFAQDialog";
+import Logo from "@/components/Logo";
 import { useFAQs } from "@/hooks/useFAQs";
 
 const Index = () => {
@@ -30,8 +32,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {/* Header with Logo */}
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <Logo size="lg" />
+          </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
             Welcome to HelpDesk Pro
           </h1>
