@@ -51,7 +51,7 @@ const Index = () => {
   const { data: orders, isLoading: ordersLoading } = useOrders();
   const { data: userOrders, isLoading: userOrdersLoading } = useUserOrders();
 
-  // Fetch statistics for orders and queries
+  // Fetch statistics for orders and queries - only for admin users
   const { data: statsData } = useQuery({
     queryKey: ['support-statistics'],
     queryFn: async () => {
@@ -65,7 +65,7 @@ const Index = () => {
         totalQueries: queriesResponse.count || 0
       };
     },
-    enabled: !!user,
+    enabled: !!user && isAdmin,
   });
 
   const categories = ["all", "general", "technical", "billing", "support"];
@@ -173,35 +173,37 @@ const Index = () => {
               </Card>
             </div>
 
-            {/* Stats Section */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Users className="h-6 w-6" />
-                  Support Statistics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">
-                      {statsData?.totalOrders || 0}
+            {/* Stats Section - only show for admin users */}
+            {isAdmin && (
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Users className="h-6 w-6" />
+                    Support Statistics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-blue-600 mb-2">
+                        {statsData?.totalOrders || 0}
+                      </div>
+                      <div className="text-gray-600">Total Orders</div>
                     </div>
-                    <div className="text-gray-600">Total Orders</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600 mb-2">
-                      {statsData?.totalQueries || 0}
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-green-600 mb-2">
+                        {statsData?.totalQueries || 0}
+                      </div>
+                      <div className="text-gray-600">Total Queries</div>
                     </div>
-                    <div className="text-gray-600">Total Queries</div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-purple-600 mb-2">10k+</div>
+                      <div className="text-gray-600">Happy Customers</div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-600 mb-2">10k+</div>
-                    <div className="text-gray-600">Happy Customers</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="faqs">
