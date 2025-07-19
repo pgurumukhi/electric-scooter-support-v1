@@ -8,7 +8,8 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signUp: (email: string) => Promise<{ error: any }>;
-  verifyOTP: (email: string, token: string) => Promise<{ error: any }>;
+  sendLoginCode: (email: string) => Promise<{ error: any }>;
+  verifyOTP: (email: string, token: string, type?: 'signup' | 'magiclink') => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -54,11 +55,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
-  const verifyOTP = async (email: string, token: string) => {
+  const sendLoginCode = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`
+      }
+    });
+    
+    return { error };
+  };
+
+  const verifyOTP = async (email: string, token: string, type: 'signup' | 'magiclink' = 'magiclink') => {
     const { error } = await supabase.auth.verifyOtp({
       email,
       token,
-      type: 'signup'
+      type
     });
     
     return { error };
@@ -74,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       session,
       loading,
       signUp,
+      sendLoginCode,
       verifyOTP,
       signOut
     }}>

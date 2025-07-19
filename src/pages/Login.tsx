@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,7 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signUp, verifyOTP } = useAuth();
+  const { sendLoginCode, verifyOTP } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -30,7 +29,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await signUp(email);
+    const { error } = await sendLoginCode(email);
     setLoading(false);
 
     if (error) {
@@ -60,7 +59,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const { error } = await verifyOTP(email, otp);
+    const { error } = await verifyOTP(email, otp, 'magiclink');
     setLoading(false);
 
     if (error) {
