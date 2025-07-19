@@ -10,6 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Order } from "@/hooks/useOrders";
+import { useIsAdmin } from "@/hooks/useProfile";
+import EditOrderDialog from "./EditOrderDialog";
 
 interface OrdersTableProps {
   orders: Order[];
@@ -31,6 +33,8 @@ const getStatusColor = (status: string) => {
 };
 
 const OrdersTable = ({ orders }: OrdersTableProps) => {
+  const isAdmin = useIsAdmin();
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -42,6 +46,7 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
             <TableHead>Order Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
+            {isAdmin && <TableHead>Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -65,11 +70,16 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
               <TableCell>
                 {format(new Date(order.created_at), "MMM dd, yyyy")}
               </TableCell>
+              {isAdmin && (
+                <TableCell>
+                  <EditOrderDialog order={order} />
+                </TableCell>
+              )}
             </TableRow>
           ))}
           {orders.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+              <TableCell colSpan={isAdmin ? 7 : 6} className="text-center py-8 text-gray-500">
                 No orders found
               </TableCell>
             </TableRow>

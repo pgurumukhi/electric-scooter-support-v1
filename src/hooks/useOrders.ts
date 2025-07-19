@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -23,6 +22,14 @@ export interface CreateOrderData {
   description: string;
   order_date: string;
   status: string;
+}
+
+export interface UpdateOrderData {
+  id: string;
+  quantity?: number;
+  description?: string;
+  order_date?: string;
+  status?: string;
 }
 
 export const useOrders = () => {
@@ -72,6 +79,41 @@ export const useCreateOrder = () => {
         variant: "destructive",
       });
       console.error('Create order error:', error);
+    },
+  });
+};
+
+export const useUpdateOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderData: UpdateOrderData) => {
+      const { id, ...updateData } = orderData;
+      const { data, error } = await supabase
+        .from('orders')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['user-orders'] });
+      toast({
+        title: "Order Updated",
+        description: "Order has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update order. Please try again.",
+        variant: "destructive",
+      });
+      console.error('Update order error:', error);
     },
   });
 };
