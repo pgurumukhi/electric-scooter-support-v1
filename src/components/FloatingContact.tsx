@@ -1,19 +1,43 @@
 
 import { useState } from "react";
-import { MessageCircle, X, Send, Phone, Mail } from "lucide-react";
+import { MessageCircle, X, Send, Phone, Mail, Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useContactSubmissions } from "@/hooks/useContactSubmissions";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const { submitContactForm, loading } = useContactSubmissions();
   const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    
+    if (selectedFile) {
+      // Check file size (5MB = 5 * 1024 * 1024 bytes)
+      const maxSize = 5 * 1024 * 1024;
+      
+      if (selectedFile.size > maxSize) {
+        toast({
+          title: "File too large",
+          description: "Please select a file smaller than 5MB",
+          variant: "destructive",
+        });
+        e.target.value = ""; // Reset the input
+        return;
+      }
+      
+      setFile(selectedFile);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +47,10 @@ const FloatingContact = () => {
     if (result.success) {
       setMessage("");
       setEmail("");
+      setFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
       setIsOpen(false);
     }
   };
@@ -81,6 +109,29 @@ const FloatingContact = () => {
                     className="border-gray-200 focus:border-blue-500 transition-colors resize-none"
                     disabled={loading}
                   />
+                </div>
+
+                {/* File Upload */}
+                <div>
+                  <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-2">
+                    Attach file (optional, max 5MB)
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="file-upload"
+                      type="file"
+                      onChange={handleFileChange}
+                      className="border-gray-200 focus:border-blue-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      disabled={loading}
+                      accept="*/*"
+                    />
+                    <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 pointer-events-none" />
+                  </div>
+                  {file && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                    </p>
+                  )}
                 </div>
                 
                 <Button 
