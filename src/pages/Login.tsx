@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
-const SignUp = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [showOTPInput, setShowOTPInput] = useState(false);
@@ -16,7 +17,7 @@ const SignUp = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast({
@@ -33,7 +34,7 @@ const SignUp = () => {
 
     if (error) {
       toast({
-        title: "Sign Up Failed",
+        title: "Login Failed",
         description: error.message,
         variant: "destructive"
       });
@@ -70,7 +71,7 @@ const SignUp = () => {
     } else {
       toast({
         title: "Success",
-        description: "Email verified successfully! Welcome to ScootFAQ",
+        description: "Welcome back to ScootFAQ!",
       });
       navigate('/');
     }
@@ -81,14 +82,14 @@ const SignUp = () => {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Join ScootFAQ</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
             <p className="text-gray-600">
-              {showOTPInput ? 'Enter the verification code sent to your email' : 'Enter your email to get started'}
+              {showOTPInput ? 'Enter the verification code sent to your email' : 'Enter your email to sign in'}
             </p>
           </div>
 
           {!showOTPInput ? (
-            <form onSubmit={handleSignUp} className="space-y-6">
+            <form onSubmit={handleSendOTP} className="space-y-6">
               <div>
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -106,7 +107,7 @@ const SignUp = () => {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Sending OTP...' : 'Sign Up'}
+                {loading ? 'Sending OTP...' : 'Send Login Code'}
               </Button>
             </form>
           ) : (
@@ -138,7 +139,7 @@ const SignUp = () => {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Verifying...' : 'Verify & Continue'}
+                {loading ? 'Verifying...' : 'Sign In'}
               </Button>
               <Button
                 type="button"
@@ -157,10 +158,10 @@ const SignUp = () => {
           <div className="mt-6 text-center space-y-2">
             <Button
               variant="link"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/signup')}
               className="text-sm"
             >
-              Already have an account? Sign In
+              Don't have an account? Sign Up
             </Button>
             <br />
             <Button
@@ -177,4 +178,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Login;
