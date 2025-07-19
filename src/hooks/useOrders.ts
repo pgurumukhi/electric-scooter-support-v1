@@ -77,11 +77,12 @@ export const useCreateOrder = () => {
 
 export const useProfiles = () => {
   return useQuery({
-    queryKey: ['profiles'],
+    queryKey: ['verified-profiles'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, email')
+        .eq('email_verified', true)
         .order('email');
 
       if (error) throw error;
