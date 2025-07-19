@@ -3,10 +3,11 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Phone, Users, HelpCircle, User, MessageSquare } from "lucide-react";
+import { BookOpen, Phone, Users, HelpCircle, User, MessageSquare, Search } from "lucide-react";
 import FloatingContact from "@/components/FloatingContact";
 import FAQItem from "@/components/FAQItem";
 import UserProfile from "@/components/UserProfile";
@@ -20,13 +21,19 @@ const Index = () => {
   const { faqs, loading: faqsLoading, refetch } = useFAQs();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const isAdmin = useIsAdmin();
 
   const categories = ["all", "general", "technical", "billing", "support"];
   
-  const filteredFAQs = selectedCategory === "all" 
-    ? faqs 
-    : faqs?.filter(faq => faq.category === selectedCategory);
+  // Filter FAQs based on category and search query
+  const filteredFAQs = faqs?.filter(faq => {
+    const matchesCategory = selectedCategory === "all" || faq.category === selectedCategory;
+    const matchesSearch = searchQuery === "" || 
+      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const handleFAQAdded = () => {
     refetch();
@@ -155,6 +162,19 @@ const Index = () => {
                   </div>
                 )}
 
+                {/* Search Input */}
+                <div className="mb-6">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search FAQs..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+
                 {/* Category Filter */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {categories.map((category) => (
@@ -187,7 +207,7 @@ const Index = () => {
                     ))}
                     {filteredFAQs?.length === 0 && (
                       <p className="text-center text-gray-500 py-8">
-                        No FAQs found for the selected category.
+                        {searchQuery ? "No FAQs found matching your search." : "No FAQs found for the selected category."}
                       </p>
                     )}
                   </div>
