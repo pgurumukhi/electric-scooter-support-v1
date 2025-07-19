@@ -133,9 +133,7 @@ const Index = () => {
             filteredFAQs.map((faq) => (
               <FAQItem
                 key={faq.id}
-                question={faq.question}
-                answer={faq.answer}
-                category={faq.category}
+                faq={faq}
               />
             ))
           )}
