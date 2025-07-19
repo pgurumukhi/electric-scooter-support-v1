@@ -1,23 +1,21 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import Logo from '@/components/Logo';
 
 const Login = () => {
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [showOTPInput, setShowOTPInput] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { sendLoginCode, verifyOTP } = useAuth();
+  const { sendLoginCode } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSendOTP = async (e: React.FormEvent) => {
+  const handleSendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast({
@@ -39,41 +37,10 @@ const Login = () => {
         variant: "destructive"
       });
     } else {
-      setShowOTPInput(true);
       toast({
-        title: "OTP Sent",
-        description: "Please check your email for the verification code",
+        title: "Magic Link Sent",
+        description: "Please check your email and click the magic link to sign in",
       });
-    }
-  };
-
-  const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!otp || otp.length !== 6) {
-      toast({
-        title: "Error", 
-        description: "Please enter the 6-digit OTP",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setLoading(true);
-    const { error } = await verifyOTP(email, otp, 'magiclink');
-    setLoading(false);
-
-    if (error) {
-      toast({
-        title: "Verification Failed",
-        description: error.message,
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Welcome back to ScootFAQ!",
-      });
-      navigate('/');
     }
   };
 
@@ -89,76 +56,31 @@ const Login = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
             <p className="text-gray-600">
-              {showOTPInput ? 'Enter the verification code sent to your email' : 'Enter your email to sign in'}
+              Enter your email to receive a magic link for signing in
             </p>
           </div>
 
-          {!showOTPInput ? (
-            <form onSubmit={handleSendOTP} className="space-y-6">
-              <div>
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  className="mt-1"
-                  required
-                />
-              </div>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? 'Sending OTP...' : 'Send Login Code'}
-              </Button>
-            </form>
-          ) : (
-            <form onSubmit={handleVerifyOTP} className="space-y-6">
-              <div>
-                <Label htmlFor="otp">Verification Code</Label>
-                <div className="mt-2 flex justify-center">
-                  <InputOTP
-                    maxLength={6}
-                    value={otp}
-                    onChange={(value) => setOtp(value)}
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-                <p className="text-sm text-gray-500 text-center mt-2">
-                  Sent to: {email}
-                </p>
-              </div>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? 'Verifying...' : 'Sign In'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  setShowOTPInput(false);
-                  setOtp('');
-                }}
-              >
-                Back to Email
-              </Button>
-            </form>
-          )}
+          <form onSubmit={handleSendMagicLink} className="space-y-6">
+            <div>
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email address"
+                className="mt-1"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? 'Sending Magic Link...' : 'Send Magic Link'}
+            </Button>
+          </form>
 
           <div className="mt-6 text-center space-y-2">
             <Button
