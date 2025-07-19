@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -37,16 +36,39 @@ export const useOrders = () => {
   return useQuery({
     queryKey: ['orders'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      console.log('Fetching orders for admin user...');
+      
+      // First fetch orders
+      const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
-        .select(`
-          *,
-          profiles!inner(email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data as Order[];
+      if (ordersError) {
+        console.error('Error fetching orders:', ordersError);
+        throw ordersError;
+      }
+
+      console.log('Orders fetched:', ordersData?.length || 0);
+
+      // Then fetch profiles separately to avoid RLS issues
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, email');
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        // Don't throw error here, just log it
+      }
+
+      // Combine the data
+      const ordersWithProfiles = ordersData?.map(order => ({
+        ...order,
+        profiles: profilesData?.find(profile => profile.id === order.profile_id) || null
+      })) || [];
+
+      console.log('Orders with profiles:', ordersWithProfiles);
+      return ordersWithProfiles as Order[];
     },
   });
 };
