@@ -3,13 +3,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, Battery, Shield, Users, MapPin, Wrench } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface FAQ {
-  id: number;
-  category: string;
-  question: string;
-  answer: string;
-}
+import { FAQ } from "@/hooks/useFAQs";
 
 interface FAQItemProps {
   faq: FAQ;
