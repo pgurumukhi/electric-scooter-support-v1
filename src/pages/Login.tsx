@@ -81,16 +81,6 @@ const Login = () => {
               {loading ? 'Sending Magic Link...' : 'Send Magic Link'}
             </Button>
           </form>
-
-          <div className="mt-6 text-center">
-            <Button
-              variant="link"
-              onClick={() => navigate('/')}
-              className="text-sm"
-            >
-              Back to FAQ
-            </Button>
-          </div>
         </div>
       </div>
     </div>
