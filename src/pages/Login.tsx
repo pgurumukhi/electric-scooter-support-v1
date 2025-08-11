@@ -82,15 +82,7 @@ const Login = () => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center space-y-2">
-            <Button
-              variant="link"
-              onClick={() => navigate('/signup')}
-              className="text-sm"
-            >
-              Don't have an account? Sign Up
-            </Button>
-            <br />
+          <div className="mt-6 text-center">
             <Button
               variant="link"
               onClick={() => navigate('/')}
